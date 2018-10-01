@@ -16,10 +16,10 @@ from mpi4py import MPI
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 
-if rank == 0:
-    # Initialize using config file 'mycnf.conf'
-    smul.initialize('mycnf.conf')
+# Initialize using config file 'mycnf.conf'
+smul.initialize('mycnf.conf')
 
+if rank == 0:
     # Loop until desired likeness has been achieved
     MAX_LIKENESS = 1
     likeness = 100
@@ -31,7 +31,6 @@ if rank == 0:
     # (make 'waitForSignal()' return)
     smul.exit()
 else:
-    smul.initialize()
     smul.waitForSignal()
 ```
 An example configuration file that could accompany this program is
@@ -77,4 +76,13 @@ Name       | Parametrization
 -----------|---------------------------------------------------
 Avalanche  | ``[[a0,a1,...,an],[b0,b1,...,bn],[c0,c1,...,cn]]``
 Unit       | N/A
+
+## smul functions
+Function        | Description
+----------------|-----------------------------------------------------------------------
+abort()         | Abort execution and close all MPI processes
+evalLikeness(v) | Evaluate likeness of image resulting from vector ``v`` to input image
+exit()          | Make all ``waitForSignal()`` functions return
+initialize(c)   | Load the configuration file specified by ``c`` and prepare the run
+waitForSignal() | Wait and respond to any vectors sent from root process
 
