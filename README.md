@@ -74,7 +74,7 @@ evaluated. Parametrizations should be of the form
 
 Name       | Parametrization
 -----------|---------------------------------------------------
-Avalanche  | ``[[a0,a1,...,an],[b0,b1,...,bn],[c0,c1,...,cn]]``
+Avalanche  | ``[a0,a1,...,an,b0,b1,...,bn,c0,c1,...,cn]``
 Unit       | N/A
 
 ## smul functions
