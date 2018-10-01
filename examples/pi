@@ -1,0 +1,41 @@
+useequation=guiding-center-relativistic;
+usetool=sycamera;
+#progress=10;
+nodrifts=yes;
+
+magnetic_field=circular;
+magnetic circular {
+    B0 = 5;
+    major_radius = 0.68;
+    minor_radius = 0.22;
+    safety_factor = 1;
+}
+domain_has_outer_wall=no;
+
+particles {
+	generation=queue;
+	t=0,-1
+	r=0.69,0.82,20;
+    ppar=1.0e6,2.0e6,8;
+    pperp=0.1e6,0.2e6,8;
+}
+
+tool sycamera {
+	radiation=synchrotron_spectrum;
+	cone=delta;
+	spectrum=7e-7,8e-7;
+	spectrum_resolution=20;
+	toroidal_resolution=3000;
+	aperture=0.006;
+	vision_angle=1.2;
+	direction=0.4,0.5,0;
+	position=0,-2.8,0;
+	product=green;
+}
+
+sycout green {
+	format=mat;
+	output=green.mat;
+    pixels=150;
+	function=r12ij;
+}
