@@ -1,6 +1,7 @@
 # Abstract base class for distribution functions
 
 from abc import ABC, abstractmethod
+import numpy as np
 
 class DistributionFunction(ABC):
     
@@ -30,3 +31,23 @@ class DistributionFunction(ABC):
         while False:
             yield None
     
+    def PreprocessInputVector(self, v, n, nparams):
+        """
+        Pre-process the input vector to give it a shape appropriate
+        for generating the distribution
+
+        v:    Input vector to reshape
+        n:    Number of coordinates in grid
+        npar: Number of parameters in model
+        """
+        l = len(v)
+        if l % nparams is not 0:
+            raise SmulException("AvalancheDistributionFunction: Input vector has invalid format: length is not a multiple of "+str(nparams)+" (number of parameters in model).")
+
+        nr = int(l / nparams)
+
+        abc = np.reshape(v, (nparams, nr))
+        abc = np.matlib.repmat(abc, nparams, n)
+
+        return abc
+

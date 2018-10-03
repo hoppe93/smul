@@ -26,9 +26,9 @@ class AvalancheDistributionFunction(DistributionFunction):
 
         v should have the layout
           [a0,a1,...,an,b0,b1,...,bn,c0,c1,...,cn]
-        where the index corresponds to the given coordinates (not just radii).
+        where the index corresponds to the given radii.
         """
-        V = self.PreprocessInputVector(v, len(r))
+        V = self.PreprocessInputVector(v, len(r), nparams=3)
 
         a = V[0,:]
         b = V[1,:]
@@ -42,25 +42,6 @@ class AvalancheDistributionFunction(DistributionFunction):
         f = a*b/c * gamma / p**2 * np.exp(-gamma/c - a*gamma*(1 - xi))
 
         return f
-
-    def PreprocessInputVector(self, v, n):
-        """
-        Pre-process the input vector to give it a shape appropriate
-        for generating the distribution
-
-        v: Input vector to reshape
-        n: Number of coordinates in grid
-        """
-        l = len(v)
-        if l % 3 is not 0:
-            raise SmulException("AvalancheDistributionFunction: Input vector has invalid format: length is not a multiple of 3 (number of parameters in model).")
-
-        nr = int(l / 3)
-
-        abc = np.reshape(v, (3, nr))
-        abc = np.matlib.repmat(abc, 3, n)
-
-        return abc
 
 ########################
 # Unit test
