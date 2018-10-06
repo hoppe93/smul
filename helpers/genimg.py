@@ -5,7 +5,7 @@ GENERATE TEST IMAGE FROM GREEN'S FUNCTION
 import h5py
 import numpy as np
 import sys
-sys.addpath('..')
+sys.path.append('..')
 
 from GreensFunction import GreensFunction
 import Initialize

@@ -12,6 +12,7 @@ import scipy.io
 
 from GreensFunction import GreensFunction
 from AvalancheDistributionFunction import AvalancheDistributionFunction
+from SemiAvalancheDistributionFunction import SemiAvalancheDistributionFunction
 from UnitDistributionFunction import UnitDistributionFunction
 
 distribution = None
@@ -25,8 +26,10 @@ def constructDistributionFunction(name, config):
     name:   Name of distribution function to use.
     config: Configuration of the distribution.
     """
-    if config['type'] == 'aava':
+    if config['type'] == 'avalanche':
         return AvalancheDistributionFunction()
+    if config['type'] == 'semi':
+        return SemiAvalancheDistributionFunction()
     if config['type'] == 'unit':
         return UnitDistributionFunction()
     else:

@@ -45,9 +45,10 @@ class DistributionFunction(ABC):
             raise SmulException("AvalancheDistributionFunction: Input vector has invalid format: length is not a multiple of "+str(nparams)+" (number of parameters in model).")
 
         nr = int(l / nparams)
+        nv = int(n/nr)
 
         abc = np.reshape(v, (nparams, nr))
-        abc = np.matlib.repmat(abc, nparams, n)
+        abc = np.matlib.repmat(abc, 1, nv)
 
         return abc
 

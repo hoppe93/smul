@@ -64,7 +64,12 @@ def evalLikeness(v):
 
 def exit():
     global END_VECTOR
-    evalLikeness(END_VECTOR)
+    distributeVector(END_VECTOR)
+
+def distributeVector(v):
+    n = SMPI.nproc()
+    for i in range(1, n):
+        SMPI.send(v, i, SMPI.TAG_INPUT_VECTOR)
 
 def getDfParameters():
     """
@@ -89,17 +94,17 @@ def generateImage(v):
         raise SmulException("Only the root process may generate an image.")
 
     # Distribute input vector
-    n = SMPI.nproc()
-    for i in range(1, n):
-        SMPI.send(v, i, SMPI.TAG_INPUT_VECTOR)
+    distributeVector(v)
 
-    if v == END_VECTOR:
+    # Exit if this was an 'END_VECTOR'
+    if np.array_equal(v, END_VECTOR):
         return
 
     # Do multiplication
     I = smul_do(Initialize.distribution, Initialize.green, v)
 
     # Retrieve partial images
+    n = SMPI.nproc()
     for i in range(1, n):
         I += SMPI.recv(i, SMPI.TAG_IMAGE)
 
@@ -142,7 +147,7 @@ def waitForSignal():
     global END_VECTOR
 
     v = getDfParameters()
-    while v != END_VECTOR:
+    while not np.array_equal(v, END_VECTOR):
         # Evaluate image
         I = smul_do(Initialize.distribution, Initialize.green, v)
 

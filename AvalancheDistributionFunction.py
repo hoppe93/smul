@@ -28,7 +28,7 @@ class AvalancheDistributionFunction(DistributionFunction):
           [a0,a1,...,an,b0,b1,...,bn,c0,c1,...,cn]
         where the index corresponds to the given radii.
         """
-        V = self.PreprocessInputVector(v, len(r), nparams=3)
+        V = self.PreprocessInputVector(v, r.size, nparams=3)
 
         a = V[0,:]
         b = V[1,:]
