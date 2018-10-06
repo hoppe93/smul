@@ -13,17 +13,18 @@ should be called every time the likeness value corresponding to a particular
 vector 'v' is needed. The 'evalLikeness()' function returns as soon as the likeness
 has been computed.
 
-ROOT PROCESS:
+ALL PROCESSES:
     smul.initialize('mycnf.conf')
+
+ROOT PROCESS:
     ...
     while likeness > MAX_LIKENESS:
         v = GetNewVector()
         likeness = smul.evalLikeness(v)
 
-    smul.evalLikeness(smul.END_VECTOR)
+    smul.exit()
 
 OTHER PROCESSES:
-    smul.initialize()
     smul.waitForSignal()
 """
 
@@ -49,26 +50,12 @@ def evalLikeness(v):
 
     v: Vector of values specifying how to generate the distribution function.
     """
-    global END_VECTOR
-
     # Make sure only the root process can call us
     if not SMPI.is_root():
         raise SmulException("Only the root process may compute the likeness value.")
 
-    # Distribute input vector
-    n = SMPI.nproc()
-    for i in range(1, n):
-        SMPI.send(v, i, SMPI.TAG_INPUT_VECTOR)
-
-    if v == END_VECTOR:
-        return
-
-    # Do multiplication
-    I = smul_do(Initialize.distribution, Initialize.green, v)
-
-    # Retrieve partial images
-    for i in range(1, n):
-        I += SMPI.recv(i, SMPI.TAG_IMAGE)
+    # Distribute input vector and generate image
+    I = generateImage(v)
 
     # Evaluate likeness
     likeness = Likeness.compare(I, Initialize.realImage)
@@ -85,6 +72,38 @@ def getDfParameters():
     be sent from the root MPI process
     """
     return SMPI.recv(SMPI.ROOT_PROC, SMPI.TAG_INPUT_VECTOR)
+
+def getGreensFunction(): return Initialize.green
+
+def generateImage(v):
+    """
+    Generate an image corresponding to the input vector 'v'.
+
+    v: Input vector. How this vector is formatted depends on
+       what the distribution function used demands.
+    """
+    global END_VECTOR
+
+    # Make sure only the root process can call us
+    if not SMPI.is_root():
+        raise SmulException("Only the root process may generate an image.")
+
+    # Distribute input vector
+    n = SMPI.nproc()
+    for i in range(1, n):
+        SMPI.send(v, i, SMPI.TAG_INPUT_VECTOR)
+
+    if v == END_VECTOR:
+        return
+
+    # Do multiplication
+    I = smul_do(Initialize.distribution, Initialize.green, v)
+
+    # Retrieve partial images
+    for i in range(1, n):
+        I += SMPI.recv(i, SMPI.TAG_IMAGE)
+
+    return I
 
 def initialize(config=""):
     """

@@ -104,8 +104,9 @@ class GreensFunction:
         return ppar, pperp
 
     def getFunction(self): return self.FUNC
-    def getPhaseSpace(self): return self.R, self.PPAR, self.PPERP
+    def getNR(self): return self.nr
     def getNpixels(self): return self.NPIXELS
+    def getPhaseSpace(self): return self.R, self.PPAR, self.PPERP
 
     def multiply(self, distributionFunction, v):
         """

@@ -100,7 +100,11 @@ def initialize(conf):
         for i in range(1, n):
             SMPI.send(filelist[i], i, SMPI.TAG_GREENSFUNCTION_NAME)
 
-        realImage = loadRealImage(config['general']['image'])
+        if os.path.isfile(config['general']['image']):
+            realImage = loadRealImage(config['general']['image'])
+        else:
+            print('WARNING: Image to compare to did not exists. Assuming it will not be needed...')
+            realImage = config['general']['image']
     else:
         # Get name of greens function
         fname = SMPI.recv(SMPI.ROOT_PROC, SMPI.TAG_GREENSFUNCTION_NAME)
