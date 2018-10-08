@@ -15,23 +15,33 @@ from AvalancheDistributionFunction import AvalancheDistributionFunction
 from SemiAvalancheDistributionFunction import SemiAvalancheDistributionFunction
 from UnitDistributionFunction import UnitDistributionFunction
 
+from SmulException import SmulException
+
 distribution = None
 green = None
 realImage = None
+nr = None
 
-def constructDistributionFunction(name, config):
+def constructDistributionFunction(name, config, rmin, rmax, greenRadialGrid):
     """
     Construct the distribution function to run with.
 
     name:   Name of distribution function to use.
     config: Configuration of the distribution.
     """
+    global nr
+
+    if 'nr' not in config:
+        smutil.error("Number of radial points in interface grid not defined (nr).")
+    else:
+        nr = int(config['nr'])
+
     if config['type'] == 'avalanche':
-        return AvalancheDistributionFunction()
+        return AvalancheDistributionFunction(nr, greenRadialGrid)
     if config['type'] == 'semi':
-        return SemiAvalancheDistributionFunction()
+        return SemiAvalancheDistributionFunction(nr, greenRadialGrid)
     if config['type'] == 'unit':
-        return UnitDistributionFunction()
+        return UnitDistributionFunction(nr, greenRadialGrid)
     else:
         smutil.error("Unrecognized distribution function type of '"+name+"': '"+config['type']+"'.")
 
@@ -56,6 +66,10 @@ def constructFilelist(basename):
 
     return filelist
             
+def getNR():
+    global nr
+    return nr
+
 def loadGreensFunction(filename):
     """
     Load the Green's function with the given name.
@@ -113,8 +127,9 @@ def initialize(conf):
         fname = SMPI.recv(SMPI.ROOT_PROC, SMPI.TAG_GREENSFUNCTION_NAME)
 
     dfname = config['general']['distribution']
-    distribution = constructDistributionFunction(dfname, config[dfname])
     green = loadGreensFunction(fname)
+    rmin, rmax = green.getRadialBounds()
+    distribution = constructDistributionFunction(dfname, config[dfname], rmin, rmax, green.getSmallR())
 
 def loadConfiguration(conf):
     """

@@ -19,6 +19,9 @@ from DistributionFunction import DistributionFunction
 np.seterr(divide='ignore', invalid='ignore')
 
 class AvalancheDistributionFunction(DistributionFunction):
+    def __init__(self, nr, greenRadialGrid):
+        super().__init__(nr, greenRadialGrid)
+
     def Eval(self, r, ppar, pperp, v, gamma=None, p=None, p2=None, xi=None):
         """
         Evaluate the avalanche distribution function defined by the

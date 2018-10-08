@@ -10,6 +10,7 @@ class GreensFunction:
         Constructor
         """
         self.nr = None
+        self.smallR = None
         self.R = None
         self.PPAR = None
         self.PPERP = None
@@ -57,13 +58,13 @@ class GreensFunction:
         p2name = ''.join([str(chr(x)) for x in matfile['param2name'][:,0]])
         ppar, pperp = self.toPparPperp(p1, p2, p1name, p2name)
 
-        self.nr = len(matfile['r'])
+        tr = matfile['r'][:,0]
+        self.nr = tr.size
         n = self.nr * ppar.size
 
         self.FUNC = np.reshape(self.FUNC, (n, self.NPIXELS*self.NPIXELS)).T
 
-        tr = matfile['r'][:,0]
-
+        self.smallR = tr
         self.R = np.matlib.repmat(tr, 1, ppar.size)
         self.PPAR  = np.reshape((np.matlib.repmat(ppar,  1, self.nr)).T, (1, n))
         self.PPERP = np.reshape((np.matlib.repmat(pperp, 1, self.nr)).T, (1, n))
@@ -107,6 +108,8 @@ class GreensFunction:
     def getNR(self): return self.nr
     def getNpixels(self): return self.NPIXELS
     def getPhaseSpace(self): return self.R, self.PPAR, self.PPERP
+    def getRadialBounds(self): return np.amin(self.smallR), np.amax(self.smallR)
+    def getSmallR(self): return self.smallR
 
     def multiply(self, distributionFunction, v):
         """

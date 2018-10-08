@@ -16,7 +16,7 @@ smul.initialize('genimg.conf')
 
 if SMPI.is_root():
     gf = smul.getGreensFunction()
-    nr = gf.getNR()
+    nr = Initialize.getNR()
 
     # Generate input vector
     E = 10.0        # Electric field
@@ -36,7 +36,7 @@ if SMPI.is_root():
 
     # Write image
     with h5py.File(Initialize.realImage, 'w') as f:
-        dset = f.create_dataset("z", I.shape, dtype='f')
+        dset = f.create_dataset("z", data=I)
 
     smul.exit()
 else:

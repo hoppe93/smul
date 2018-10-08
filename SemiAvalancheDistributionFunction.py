@@ -29,6 +29,9 @@ np.seterr(divide='ignore', invalid='ignore')
 
 class SemiAvalancheDistributionFunction(DistributionFunction):
     
+    def __init__(self, nr, greenRadialGrid):
+        super().__init__(nr, greenRadialGrid)
+    
     def Eval(self, r, ppar, pperp, v, gamma=None, p2=None, p=None, xi=None):
         """
         Evaluate the avalanche distribution function defined by the
