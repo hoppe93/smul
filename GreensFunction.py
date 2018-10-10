@@ -147,7 +147,6 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
     gf = GreensFunction('examples/green.mat')
-    #gf = GreensFunction('/home/hoppe/Hämtningar/green_1140403026_t0740ms_qAll_R75to76cm_0.mat')
     df = UnitDistributionFunction()
 
     tic = time.time()

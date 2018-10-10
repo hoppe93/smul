@@ -101,9 +101,11 @@ def initialize(conf):
     """
     global distribution, green, realImage
 
+    print('Obtaining process rank')
     rank = SMPI.rank()
 
     # Load the configuration file
+    print(str(rank)+': Loading configuration file')
     config = loadConfiguration(conf)
 
     fname = None
@@ -112,12 +114,14 @@ def initialize(conf):
         filelist = constructFilelist(bname)
 
         # Distribute filenames to processes (give 0 to this process)
+        print('Distributing filenames to other processes')
         n = len(filelist)
         fname = filelist[0]
         for i in range(1, n):
             SMPI.send(filelist[i], i, SMPI.TAG_GREENSFUNCTION_NAME)
 
         if os.path.isfile(config['general']['image']):
+            print('Loading real image...')
             realImage = loadRealImage(config['general']['image'])
         else:
             print('WARNING: Image to compare to did not exists. Assuming it will not be needed...')
@@ -127,8 +131,10 @@ def initialize(conf):
         fname = SMPI.recv(SMPI.ROOT_PROC, SMPI.TAG_GREENSFUNCTION_NAME)
 
     dfname = config['general']['distribution']
+    print(str(rank)+": Loading Green's function...")
     green = loadGreensFunction(fname)
     rmin, rmax = green.getRadialBounds()
+    print(str(rank)+': Constructing distribution function')
     distribution = constructDistributionFunction(dfname, config[dfname], rmin, rmax, green.getSmallR())
 
 def loadConfiguration(conf):

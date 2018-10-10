@@ -93,21 +93,28 @@ def generateImage(v):
     if not SMPI.is_root():
         raise SmulException("Only the root process may generate an image.")
 
+    print('Generating image corresponding to vector '+str(v))
+
     # Distribute input vector
+    print('Distributing vector to other processes')
     distributeVector(v)
 
     # Exit if this was an 'END_VECTOR'
     if np.array_equal(v, END_VECTOR):
+        print('Received end vector. Exiting.')
         return
 
     # Do multiplication
+    print('Constructing image...')
     I = smul_do(Initialize.distribution, Initialize.green, v)
 
     # Retrieve partial images
+    print('Retrieving images from other processes...')
     n = SMPI.nproc()
     for i in range(1, n):
         I += SMPI.recv(i, SMPI.TAG_IMAGE)
 
+    print('Returning final image')
     return I
 
 def initialize(config=""):
