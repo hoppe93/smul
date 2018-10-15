@@ -11,6 +11,7 @@ from GreensFunction import GreensFunction
 import Initialize
 import SMPI
 import smul
+import time
 
 smul.initialize('genimg.conf')
 
@@ -32,7 +33,11 @@ if SMPI.is_root():
     v = np.concatenate([a,b,c])
 
     # Call other MPI processes to generate image
+    start = time.time()
     I = smul.generateImage(v)
+    end = time.time()
+
+    print('Multiplication took %s s' % (end - start))
 
     # Write image
     with h5py.File(Initialize.realImage, 'w') as f:

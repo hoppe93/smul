@@ -9,9 +9,11 @@ _rank = None
 ROOT_PROC = 0
 
 # Tags
-TAG_GREENSFUNCTION_NAME = 1
-TAG_INPUT_VECTOR        = 2
-TAG_IMAGE               = 3
+TAG_GREENSFUNCTION_NAME  = 1
+TAG_INPUT_VECTOR         = 2
+TAG_IMAGE                = 3
+TAG_RADIAL_BOUNDS_LOCAL  = 4
+TAG_RADIAL_BOUNDS_GLOBAL = 5
 
 def abort():
     global _comm

@@ -22,6 +22,10 @@ green = None
 realImage = None
 nr = None
 
+# Global radial min/max
+RMIN = None
+RMAX = None
+
 def constructDistributionFunction(name, config, rmin, rmax, greenRadialGrid):
     """
     Construct the distribution function to run with.
@@ -37,11 +41,11 @@ def constructDistributionFunction(name, config, rmin, rmax, greenRadialGrid):
         nr = int(config['nr'])
 
     if config['type'] == 'avalanche':
-        return AvalancheDistributionFunction(nr, greenRadialGrid)
+        return AvalancheDistributionFunction(nr, rmin, rmax, greenRadialGrid)
     if config['type'] == 'semi':
-        return SemiAvalancheDistributionFunction(nr, greenRadialGrid)
+        return SemiAvalancheDistributionFunction(nr, rmin, rmax, greenRadialGrid)
     if config['type'] == 'unit':
-        return UnitDistributionFunction(nr, greenRadialGrid)
+        return UnitDistributionFunction(nr, rmin, rmax, greenRadialGrid)
     else:
         smutil.error("Unrecognized distribution function type of '"+name+"': '"+config['type']+"'.")
 
@@ -66,6 +70,10 @@ def constructFilelist(basename):
 
     return filelist
             
+def getGlobalRBounds():
+    global RMIN, RMAX
+    return RMIN, RMAX
+
 def getNR():
     global nr
     return nr
@@ -99,7 +107,7 @@ def initialize(conf):
     Initializes this process by reading the configuration
     file with name given by 'conf'.
     """
-    global distribution, green, realImage
+    global distribution, green, realImage, RMIN, RMAX
 
     print('Obtaining process rank')
     rank = SMPI.rank()
@@ -134,8 +142,30 @@ def initialize(conf):
     print(str(rank)+": Loading Green's function...")
     green = loadGreensFunction(fname)
     rmin, rmax = green.getRadialBounds()
+
+    # Distribute Green's function radial limits
+    if rank == 0:
+        RMIN = rmin
+        RMAX = rmax
+
+        # Get local limits
+        n = SMPI.nproc()
+        for i in range(1, n):
+            mn, mx = SMPI.recv(i, SMPI.TAG_RADIAL_BOUNDS_LOCAL)
+            if mn < RMIN: RMIN = mn
+            if mx > RMAX: RMAX = mx
+
+        # Distribute global limits
+        for i in range(1, n):
+            SMPI.send((RMIN, RMAX), i, SMPI.TAG_RADIAL_BOUNDS_GLOBAL)
+    else:
+        # Send local limits
+        SMPI.send((rmin, rmax), SMPI.ROOT_PROC, SMPI.TAG_RADIAL_BOUNDS_LOCAL)
+        # Get global limits
+        RMIN, RMAX = SMPI.recv(SMPI.ROOT_PROC, SMPI.TAG_RADIAL_BOUNDS_GLOBAL)
+
     print(str(rank)+': Constructing distribution function')
-    distribution = constructDistributionFunction(dfname, config[dfname], rmin, rmax, green.getSmallR())
+    distribution = constructDistributionFunction(dfname, config[dfname], RMIN, RMAX, green.getSmallR())
 
 def loadConfiguration(conf):
     """

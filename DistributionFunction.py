@@ -6,9 +6,9 @@ import smutil
 
 class DistributionFunction(ABC):
 
-    def __init__(self, nr, greenRadialGrid):
-        rmin = np.amin(greenRadialGrid)
-        rmax = np.amax(greenRadialGrid)
+    def __init__(self, nr, rmin, rmax, greenRadialGrid):
+        #rmin = np.amin(greenRadialGrid)
+        #rmax = np.amax(greenRadialGrid)
         self.radialGrid      = np.linspace(rmin, rmax, nr)
         self.greenRadialGrid = greenRadialGrid
     

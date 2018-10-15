@@ -4,6 +4,6 @@ import h5py
 import matplotlib.pyplot as plt
 
 f = h5py.File('realImage.mat', 'r')
-plt.imshow(f['z'][:,:])
+plt.imshow(f['z'][:,:], origin='lower')
 plt.show()
 
