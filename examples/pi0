@@ -1,6 +1,6 @@
 useequation=guiding-center-relativistic;
 usetool=sycamera;
-#progress=10;
+progress=10;
 nodrifts=yes;
 
 magnetic_field=circular;
@@ -15,7 +15,8 @@ domain_has_outer_wall=no;
 particles {
 	generation=queue;
 	t=0,-1
-	r=0.69,0.82,20;
+	r=0.68,0.729,50;
+    #r=0.68,0.73,50;
     ppar=1.0e6,2.0e6,8;
     pperp=0.1e6,0.2e6,8;
     #p=50e6,50e6,1;
@@ -37,12 +38,12 @@ tool sycamera {
 
 sycout green {
 	format=mat;
-	output=green.mat;
+	output=green0.mat;
     pixels=150;
 	function=r12ij;
 }
 sycout image {
     pixels=300;
-    name=image.mat;
+    name=image0.mat;
 }
 

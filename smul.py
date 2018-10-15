@@ -111,13 +111,17 @@ def generateImage(v):
     # Retrieve partial images
     print('Retrieving images from other processes...')
     n = SMPI.nproc()
+    #I1 = SMPI.recv(1, SMPI.TAG_IMAGE)
+    #I2 = SMPI.recv(2, SMPI.TAG_IMAGE)
+    #I3 = SMPI.recv(3, SMPI.TAG_IMAGE)
     for i in range(1, n):
         I += SMPI.recv(i, SMPI.TAG_IMAGE)
+
 
     print('Returning final image')
     return I
 
-def initialize(config=""):
+def initialize(config="", inputRealImage=True):
     """
     Initialize smul with the given configuration file.
 
@@ -128,7 +132,7 @@ def initialize(config=""):
     SMPI.init()
     rank = SMPI.rank()
 
-    Initialize.initialize(config)
+    Initialize.initialize(config, inputRealImage=inputRealImage)
 
 def smul_do(df, gf, v):
     """

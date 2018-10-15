@@ -9,6 +9,7 @@ import os.path
 import SMPI
 import smutil
 import scipy.io
+import h5py
 
 from GreensFunction import GreensFunction
 from AvalancheDistributionFunction import AvalancheDistributionFunction
@@ -95,14 +96,14 @@ def loadRealImage(filename):
 
         img = matfile['z']
     # If it fails, try to load as HDF5
-    except NotImplementedError:
+    except (NotImplementedError, ValueError):
         matfile = h5py.File(filename)
 
         img = matfile['z'][:,:]
 
     return img
 
-def initialize(conf):
+def initialize(conf, inputRealImage=True):
     """
     Initializes this process by reading the configuration
     file with name given by 'conf'.
@@ -128,7 +129,7 @@ def initialize(conf):
         for i in range(1, n):
             SMPI.send(filelist[i], i, SMPI.TAG_GREENSFUNCTION_NAME)
 
-        if os.path.isfile(config['general']['image']):
+        if inputRealImage and os.path.isfile(config['general']['image']):
             print('Loading real image...')
             realImage = loadRealImage(config['general']['image'])
         else:

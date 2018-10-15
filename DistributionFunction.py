@@ -3,6 +3,7 @@
 from abc import ABC, abstractmethod
 import numpy as np
 import smutil
+import SMPI
 
 class DistributionFunction(ABC):
 
@@ -65,8 +66,15 @@ class DistributionFunction(ABC):
         b = np.interp(self.greenRadialGrid, self.radialGrid, abc[1,:])
         c = np.interp(self.greenRadialGrid, self.radialGrid, abc[2,:])
 
+        a = np.matlib.repmat(a, nv, 1).T
+        b = np.matlib.repmat(b, nv, 1).T
+        c = np.matlib.repmat(c, nv, 1).T
+
+        a = np.reshape(a, (1,nv*nr))
+        b = np.reshape(b, (1,nv*nr))
+        c = np.reshape(c, (1,nv*nr))
+
         abc = np.array([a,b,c])
-        abc = np.matlib.repmat(abc, 1, nv)
 
         return abc
 

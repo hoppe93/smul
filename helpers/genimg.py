@@ -13,7 +13,7 @@ import SMPI
 import smul
 import time
 
-smul.initialize('genimg.conf')
+smul.initialize('genimg.conf', inputRealImage=False)
 
 if SMPI.is_root():
     gf = smul.getGreensFunction()
@@ -25,6 +25,7 @@ if SMPI.is_root():
 
     # Linearly decaying radial profile
     b = np.linspace(1, 0, nr)
+    #b = np.ones((nr,))
     # Momentum space parameters remain the same at all radii
     a = (E / Z) * np.ones(b.shape)
     c = (17*np.sqrt(Z+5)) * np.ones(b.shape)
